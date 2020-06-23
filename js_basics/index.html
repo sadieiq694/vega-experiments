@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://vega.github.io/vega/vega.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
@@ -10,11 +11,18 @@
 </head>
 <body>
     <h1>Hello World!</h1>
-    <div id="view"></div>
+    <div id="view1"></div>
     <script>
       vegaEmbed(
-        '#view',
-        'https://vega.github.io/vega/examples/bar-chart.vg.json'
+        '#view1',
+        'https://raw.githubusercontent.com/mtoslalibu/mtoslalibu/master/graph-draft.vg.json'
+      );
+    </script>
+    <div id="view2"></div>
+    <script>
+      vegaEmbed(
+        '#view2',
+        'https://raw.githubusercontent.com/mtoslalibu/mtoslalibu/master/timeline.vg.json'
       );
     </script>
 </body>

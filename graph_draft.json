@@ -1,66 +1,12 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v5.json",
   "description": "A node-link diagram with force-directed layout, depicting character co-occurrence in the novel Les Misérables.",
-  "width": 700,
-  "height": 500,
+  "width": 400,
+  "height": 300,
   "padding": 0,
   "autosize": "none",
-  "signals": [
-     {
-      "name": "tooltip",
-      "value": {},
-      "on": [
-        {"events": "symbol:mouseover", "update": "datum"},
-        {"events": "symbol:mouseout",  "update": "{}"}
-      ]
-    },
-    { "name": "cx", "update": "width / 2" },
-    { "name": "cy", "update": "height / 2" },
-    { "name": "nodeRadius", "value": 8,
-      "bind": {"input": "range", "min": 1, "max": 50, "step": 1} },
-    { "name": "nodeCharge", "value": -30,
-      "bind": {"input": "range", "min":-100, "max": 10, "step": 1} },
-    { "name": "linkDistance", "value": 30,
-      "bind": {"input": "range", "min": 5, "max": 100, "step": 1} },
-    { "name": "static", "value": true,
-      "bind": {"input": "checkbox"} },
-    {
-      "description": "State variable for active node fix status.",
-      "name": "fix", "value": false,
-      "on": [
-        {
-          "events": "symbol:mouseout[!event.buttons], window:mouseup",
-          "update": "false"
-        },
-        {
-          "events": "symbol:mouseover",
-          "update": "fix || true"
-        },
-        {
-          "events": "[symbol:mousedown, window:mouseup] > window:mousemove!",
-          "update": "xy()",
-          "force": true
-        }
-      ]
-    },
-    {
-      "description": "Graph node most recently interacted with.",
-      "name": "node", "value": null,
-      "on": [
-        {
-          "events": "symbol:mouseover",
-          "update": "fix === true ? item() : node"
-        }
-      ]
-    },
-    {
-      "description": "Flag to restart Force simulation upon data changes.",
-      "name": "restart", "value": false,
-      "on": [
-        {"events": {"signal": "fix"}, "update": "fix && fix.length"}
-      ]
-    }
-  ],
+
+
   "data": [
     {
       "name": "node-data",
@@ -68,101 +14,204 @@
          "nodes": [
     {
       "name": "Myriel",
-      "type": "pod",
-      "group": 2,
+      "type": "deployment",
+      "group": 0,
+      
       "index": 0
     },
     {
       "name": "Napoleon",
+      "type": "image",
+      "group": 7,
+      
+      "index": 1
+    },
+   
+    {
+      "name": "Mert",
       "type": "container",
       "group": 3,
-      "index": 1
+      "index": 2
     },
     {
       "name": "Mlle.Baptistine",
       "type": "node",
-      "group": 4,
-      "index": 2
-    },
-    {
-      "name": "Mme.Magloire",
-      "type": "container",
       "group": 1,
       "index": 3
     },
     {
       "name": "Mme.Magloire",
       "type": "container",
-      "group": 1,
-      "index": 3
+      "group": 3,
+      "index": 4
+    },
+    
+    {
+      "name": "Sadie",
+      "type": "container",
+      "group": 3,
+      "index": 5
     }
     ,
     {
-      "name": "Mme.Magloire2",
-      "type": "container",
-      "group": 1,
-      "index": 3
+      "name": "Sri",
+      "type": "service",
+      "group": 2,
+      "index": 6
     }
   ]
 	},"format": {"type": "json", "property": "nodes"}
     },
     {
       "name": "link-data",
+      
       "values":  {"links": [
     {
       "source": 1,
       "target": 0,
-      "value": 100
+      "value": 0
     },
     {
       "source" : 2,
       "target": 1,
+
+      "value": 1
+    },
+    {
+      "source" : 3,
+      "target": 4,
+      "value": 1
+    },
+    {
+      "source" : 3,
+      "target": 1,
+      "value": 1
+    },
+    {
+      "source" : 4,
+      "target": 1,
+      "value": 1
+    },
+     {
+      "source" : 5,
+      "target": 6,
       "value": 1
     }
   ]},
       "format": {"type": "json", "property": "links"}
     }
   ],
-  "scales": [
+ "scales": [
+   {
+      "name": "link-status",
+      "type": "ordinal",
+      "domain": {"data": "link-data", "field": "value"},
+      "range": ["lightgrey", "black"]
+    },
     {
+      "name": "shape",
+      "type": "ordinal",
+      "domain": {"data": "node-data", "field": "group"},
+      "range": ["circle", "cross", "diamond", "square", "triangle-down", "triangle-up"]
+    },
+       {
       "name": "color",
       "type": "ordinal",
       "domain": {"data": "node-data", "field": "group"},
-      "range": {"scheme": "category20c"}
+      "range": {"scheme": "category20"}
     }
   ],
-  "marks": [
+   "signals": [
+    { "name": "cx", "update": "width / 2" },
+    { "name": "cy", "update": "height / 2" }, 
+    {
+      "description": "State variable for active node dragged status.",
+      "name": "dragged", "value": 0,
+      "on": [
+        {
+          "events": "symbol:mouseout[!event.buttons], window:mouseup",
+          "update": "0"
+        },
+        {
+          "events": "symbol:mouseover",
+          "update": "dragged || 1"
+        },
+        {
+          "events": "[symbol:mousedown, window:mouseup] > window:mousemove!",
+          "update": "2", "force": true
+        }
+      ]
+    },
+    {
+      "description": "Graph node most recently interacted with.",
+      "name": "dragged_node", "value": null,
+      "on": [
+        {
+          "events": "symbol:mouseover",
+          "update": "dragged === 1 ? item() : dragged_node"
+        }
+      ]
+    },
+    {
+      "description": "Flag to restart Force simulation upon data changes.",
+      "name": "restart", "value": false,
+      "on": [
+        {"events": {"signal": "dragged"}, "update": "dragged > 1"}
+      ]
+    },
+    {
+      "name": "tooltip",
+      "value": {},
+      "on": [
+        {"events": "symbol:mouseover", "update": "datum"},
+        {"events": "symbol:mouseout",  "update": "{}"}
+      ]
+    }
+  ],
+
+"marks": [
     {
       "name": "nodes",
       "type": "symbol",
       "zindex": 1,
+
       "from": {"data": "node-data"},
+      "on": [
+        {
+          "trigger": "dragged",
+          "modify": "dragged_node",
+          "values": "dragged === 1 ? {fx:dragged_node.x, fy:dragged_node.y} : {fx:x(), fy:y()}"
+        },
+        {
+          "trigger": "!dragged",
+          "modify": "dragged_node", "values": "{fx: null, fy: null}"
+        }
+      ],
+
       "encode": {
         "enter": {
+          
           "fill": {"scale": "color", "field": "group"},
-          "stroke": {"value": "white"}
+          "shape": {"scale":"shape","field":"group"}
         },
         "update": {
-          "size": {"signal": "2 * nodeRadius * nodeRadius"},
-         "fill": {"scale": "color", "field": "group"},
+          "size": {"value": 1000},
           "cursor": {"value": "pointer"}
-        },
-        "hover": {
-          "fill": {"value": "red"}
         }
       },
+
       "transform": [
         {
           "type": "force",
           "iterations": 300,
+          "velocityDecay": 0.1,
           "restart": {"signal": "restart"},
-          "static": {"signal": "static"},
-          "signal": "force",
+          "static": false,
           "forces": [
             {"force": "center", "x": {"signal": "cx"}, "y": {"signal": "cy"}},
-            {"force": "collide", "radius": {"signal": "nodeRadius"}},
-            {"force": "nbody", "strength": {"signal": "nodeCharge"}},
-            {"force": "link", "links": "link-data", "distance": {"signal": "linkDistance"}}
+            {"force": "collide", "radius": 50},
+            {"force": "nbody", "strength": -10},
+            {"force": "link", "links": "link-data", "distance": 100}
           ]
         }
       ]
@@ -173,29 +222,29 @@
       "interactive": false,
       "encode": {
         "update": {
-          "stroke": {"value": "#ccc"},
-          "strokeWidth": {"value": 0.5}
+          "stroke": {"scale": "link-status","field": "value"},
+          "strokeWidth":{"value":"3"} 
+          
         }
       },
       "transform": [
         {
-          "type": "linkpath",
-          "require": {"signal": "force"},
-          "shape": "line",
+          "type": "linkpath", "shape": "line",
           "sourceX": "datum.source.x", "sourceY": "datum.source.y",
           "targetX": "datum.target.x", "targetY": "datum.target.y"
         }
       ]
-    },
-    {
+    }
+    , {
       "type": "text",
       "encode": {
         "enter": {
           "fill": {"value": "#333"}
         },
         "update": {
-          "x": {"scale": "color","offset": 10},
-          "y": {"scale": "color","offset": 10},
+          "x": {"scale": "color","offset": 20},
+          "y": {"scale": "color","offset": 20},
+         "fontSize": {"value": "25"},
           "text": {"signal": "[tooltip.name, tooltip.type]"},
           "fillOpacity": [
             {"test": "isNaN(tooltip.name)", "value": 0},

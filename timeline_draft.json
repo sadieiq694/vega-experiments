@@ -1,0 +1,214 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v5.json",
+    "description": "A timeline visualization of the lives of the first five U.S. presidents.",
+    "width": 700,
+    "height": 200,
+    "padding": 5,
+    "signals": [
+      {
+        "name": "tooltip",
+        "value": {},
+        "on": [
+          {"events": "rect:mouseover", "update": "datum"},
+          {"events": "rect:mouseout",  "update": "{}"}
+        ]
+      },
+       {
+        "name": "eventHover",
+        "value": {},
+        "on": [
+          {"events": "eventRects:mouseover", "update": "datum"},
+          {"events": "eventRects:mouseout",  "update": "{}"}
+        ]
+      },
+      {
+      "name": "curEventDescr",
+      "value": "Event Description",
+      "update": "eventHover.description"
+      }
+    ],
+    "data": [
+      {
+        "name": "vertices",
+        "values": [
+          {
+            "label": "node1",
+            "creation": 1592928000000,
+            "deletion": 1592931600000,
+            "enter": 1592929200000,
+            "leave": 1592929380000
+          },
+          {
+            "label": "pod1",
+            "creation": 1592928000000,
+            "running": 1592928600000,
+            "deletion": 1592931600000,
+            "enter": 1592931000000,
+            "leave": 1592931600000
+          },
+          {
+            "label": "container1",
+            "creation": 1592928505000,
+            "running": 1592929020000,
+            "deletion": 1592931300000,
+            "enter": 1592929800000,
+            "leave": 1592930000000
+          }
+        ]
+      },
+      {
+        "name": "events",
+        "format": {"type":"json", "parse":{"when":"date"}},
+        "values": [
+          { "name":"Event 1", "when":1592930000000, "vertex":"node1", "description":"Error occurred"},
+          { "name":"Event 2", "when":1592930300000, "vertex":"pod1", "description":"Another error!"},
+          { "name":"Event 3", "when":1592930700000, "vertex":"container1", "description":"Something happened"},
+          { "name":"Event 4", "when":1592931000000, "vertex":"node1", "description":"Something else happened"}
+        ]
+      }
+    ],
+  
+    "scales": [
+      {
+        "name": "yscale",
+        "type": "band",
+        "range": [0, {"signal": "height"}],
+        "domain": {"data": "vertices", "field": "label"}
+      },
+      {
+        "name": "xscale",
+        "type": "time",
+        "range": "width",
+        "round": true,
+        "domain": {"data": "vertices", "fields": ["creation", "deletion"]}
+      }
+    ],
+  
+    "axes": [
+      {"orient": "bottom", "scale": "xscale", "format": "%I:%M"}
+    ],
+  
+    "marks": [
+      {
+        "name": "eventLabel",
+        "type": "text",
+        "from": {"data": "events"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "when", "offset":10},
+            "y": {"scale":"yscale", "field":"vertex", "offset":-10},
+            "angle": {"value": -25},
+            "fill": {"value": "#000"},
+            "text": {"field": "name"},
+            "fontSize": {"value": 11}
+          }, 
+          "update": {
+            "fill": {"value": "#000"},
+            "text": {"field": "name"}
+          }, 
+          "hover": {
+            "fill":{"value":"red"}
+          }
+        }
+      },
+      {
+        "name": "event_descr",
+        "type": "text",
+        "encode": {
+          "enter": {
+            "fill": {"value": "#333"}
+          },
+          "update": {
+            "x": {"value": 10},
+            "y": {"value": 10},
+            "text": {"signal": "[tooltip.name, tooltip.description]"},
+            "fillOpacity": [
+              {"test": "isNaN(tooltip.name)", "value": 0},
+              {"value": 1}
+            ]
+          }
+        }
+      },
+      {
+        "name": "eventRects",
+        "type": "rect",
+        "from": {"data": "events"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "when"},
+            "y": {"scale":"yscale", "field":"vertex", "offset":-9},
+            "width": {"value": 6},
+            "height": {"value":18, "offset": 1},
+            "fill": {"value": "#777"}
+          },
+          "update": {
+            "fill": {"value": "gray"}
+          }, 
+          "hover": {
+            "fill":{"value":"red"}
+          }
+        }
+      },
+      {
+        "description":"Labels for vertices (represented by the horizontal lines)",
+        "type": "text",
+        "from": {"data": "vertices"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "creation"},
+            "y": {"scale": "yscale", "field": "label", "offset": -3},
+            "fill": {"value": "#000"},
+            "text": {"field": "label"},
+            "fontSize": {"value": 11}
+          }
+        }
+      },
+      {
+        "type": "rect",
+        "from": {"data": "vertices"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "creation"},
+            "x2": {"scale": "xscale", "field": "deletion"},
+            "y": {"scale": "yscale", "field": "label"},
+            "height": {"value": 2},
+            "fill": {"value": "#557"}
+          }
+        }
+      },
+      {
+        "type": "rect",
+        "from": {"data": "vertices"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "enter"},
+            "x2": {"scale": "xscale", "field": "leave"},
+            "y": {"scale": "yscale", "field": "label", "offset":-1},
+            "height": {"value": 4},
+            "fill": {"value": "#e44"}
+          }
+        }
+      },
+      {
+        "type": "rect",
+        "from": {"data": "vertices"},
+        "encode": {
+          "enter": {
+            "x": {"scale": "xscale", "field": "creation"},
+            "x2": {"scale": "xscale", "field": "running"},
+            "y": {"scale": "yscale", "field": "label", "offset":-1},
+            "height": {"value": 4},
+            "fill": {"value": "steelblue"}
+          },
+          "update": {
+           "fill": {"value": "steelblue"},
+            "cursor": {"value": "pointer"}
+          },
+          "hover": {
+            "fill": {"value": "pink"}
+          }
+        }
+      }
+    ]
+  }
+  
